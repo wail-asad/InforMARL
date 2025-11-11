@@ -151,8 +151,7 @@ class MPERunner(Runner):
         elif self.envs.action_space[0].__class__.__name__ == "Discrete":
             actions_env = np.squeeze(np.eye(self.envs.action_space[0].n)[actions], 2)
         else:
-            raise NotImplementedError
-
+            actions_env = actions
         return (
             values,
             actions,
@@ -263,7 +262,7 @@ class MPERunner(Runner):
                     np.eye(self.eval_envs.action_space[0].n)[eval_actions], 2
                 )
             else:
-                raise NotImplementedError
+                eval_actions_env = eval_actions
 
             # Obser reward and next obs
             eval_obs, eval_rewards, eval_dones, eval_infos = self.eval_envs.step(
@@ -365,7 +364,7 @@ class MPERunner(Runner):
                 elif envs.action_space[0].__class__.__name__ == "Discrete":
                     actions_env = np.squeeze(np.eye(envs.action_space[0].n)[actions], 2)
                 else:
-                    raise NotImplementedError
+                    actions_env = actions
 
                 # Obser reward and next obs
                 obs, rewards, dones, infos = envs.step(actions_env)
@@ -381,7 +380,7 @@ class MPERunner(Runner):
                 masks[dones == True] = np.zeros(
                     ((dones == True).sum(), 1), dtype=np.float32
                 )
-                get_metrics = False
+
                 if not get_metrics:
                     if self.all_args.render_eval:
                         if self.all_args.save_gifs:
@@ -413,7 +412,7 @@ class MPERunner(Runner):
 
         if self.all_args.save_gifs:
             imageio.mimsave(
-                str(self.gif_dir) + "/render.mp4",
+                str(self.gif_dir) + "/render.gif",
                 all_frames,
-                fps=60,#self.all_args.ifi,
+                duration=self.all_args.ifi,
             )

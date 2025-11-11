@@ -254,7 +254,7 @@ def get_config():
         "--env_name",
         type=str,
         default="MPE",
-        choices=["MPE", "GraphMPE"],
+        choices=["MPE", "GraphMPE", "MEC"],
         help="specify the name of environment",
     )
     parser.add_argument(

@@ -32,6 +32,11 @@ def make_train_env(all_args: argparse.Namespace):
                 env = MPEEnv(all_args)
             elif all_args.env_name == "GraphMPE":
                 env = GraphMPEEnv(all_args)
+            elif all_args.env_name == "MEC":
+                import sys
+                sys.path.insert(0, '/root/mec_workspace/SS-MARL')
+                from ssmarl.envs.mec_env.mec_environment import MECBeamformingEnv
+                env = MECBeamformingEnv(num_servers=all_args.num_agents, num_ues=all_args.num_ues)
             else:
                 print(f"Can not support the {all_args.env_name} environment")
                 raise NotImplementedError
@@ -59,6 +64,11 @@ def make_eval_env(all_args: argparse.Namespace):
                 env = MPEEnv(all_args)
             elif all_args.env_name == "GraphMPE":
                 env = GraphMPEEnv(all_args)
+            elif all_args.env_name == "MEC":
+                import sys
+                sys.path.insert(0, '/root/mec_workspace/SS-MARL')
+                from ssmarl.envs.mec_env.mec_environment import MECBeamformingEnv
+                env = MECBeamformingEnv(num_servers=all_args.num_agents, num_ues=all_args.num_ues)
             else:
                 print(f"Can not support the {all_args.env_name} environment")
                 raise NotImplementedError
@@ -93,6 +103,7 @@ def parse_args(args, parser):
     parser.add_argument(
         "--num_obstacles", type=int, default=3, help="Number of obstacles"
     )
+    parser.add_argument("--num_ues", type=int, default=9, help="Number of UEs for MEC")
     parser.add_argument(
         "--collaborative",
         type=lambda x: bool(strtobool(x)),
@@ -168,10 +179,10 @@ def main(args):
         "Please check the config.py."
     )
 
-    # cuda3
+    # cuda
     if all_args.cuda and torch.cuda.is_available():
         print_box("Choose to use gpu...")
-        device = torch.device("cuda:3")
+        device = torch.device("cuda:0")
         torch.set_num_threads(all_args.n_training_threads)
         if all_args.cuda_deterministic:
             torch.backends.cudnn.benchmark = False
